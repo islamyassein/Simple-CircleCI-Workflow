@@ -13,8 +13,6 @@ jobs:
         name: echo hello
         command: echo "hello"
   print_world:
-    requires: 
-      - print_hello
     docker:
       - image: circleci/node:13.8.0
     setps:
@@ -29,3 +27,5 @@ workflows:
     jobs:
       - print_hello
       - print_world
+        requires:
+          - print_hello
