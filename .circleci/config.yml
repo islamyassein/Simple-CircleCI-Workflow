@@ -5,14 +5,14 @@ version: 2.1
   # Declare a dependency on the welcome-orb
 #  welcome: circleci/welcome-orb@0.4.1
 jobs:
-  print_hello:
+  printhello:
     docker:
       - image: circleci/node:13.8.0
     setps:
       - run: 
         name: echo hello
         command: echo "hello"
-  print_world:
+  printworld:
     docker:
       - image: circleci/node:13.8.0
     setps:
@@ -25,5 +25,7 @@ workflows:
   welcome:
     # Run the welcome/run job in its own container
     jobs:
-      - print_hello
-      - print_world
+      - printhello
+      - printworld
+          requires:
+            - printhello
