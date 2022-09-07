@@ -7,15 +7,6 @@ defaults: &defaults
   working_directory: ~/project
 
 
-commands: # a reusable command with parameters
-  greeting:
-    parameters:
-      to:
-        type: string
-        default: "world"
-    steps:
-      - run: echo "Hello <<parameters.to>>"
-
 workflows:
   workspace:
     jobs:
@@ -26,6 +17,7 @@ workflows:
       - print_output_file:
           requires:
             - save_hello_world_output
+
 
 jobs:
 
@@ -54,5 +46,3 @@ jobs:
       - attach_workspace:
           at: ~/
       - run: cat ~/output.txt
-      - greeting:
-          to: "Islam Yassein"
