@@ -1,4 +1,10 @@
+# .circleci/config.yml
 version: 2.1
+
+defaults: &defaults
+  docker:
+    - image: cimg/base:2020.01
+  working_directory: ~/project
 
 workflows:
   workspace:
@@ -11,11 +17,10 @@ workflows:
           requires:
             - save_hello_world_output
 
+
 jobs:
   build:
-    docker:
-#     - image: circleci/node:13.8.0  -->  circleci/ is deprecated
-      - image: cimg/base:2020.01
+    <<: *defaults
     steps:
       - checkout
       - run:
@@ -23,8 +28,7 @@ jobs:
           command: |
             echo $MY_ENV_VAR
   save_hello_world_output:
-    docker:
-      - image: cimg/base:2020.01
+    <<: *defaults
     steps:
 #      - run: mkdir -p workspace
       - run: echo "hello world" > ~/output.txt
@@ -33,8 +37,7 @@ jobs:
           paths: 
             - output.txt
   print_output_file:
-    docker:
-      - image: cimg/base:2020.01
+    <<: *defaults
     steps:
       - attach_workspace:
           at: ~/
