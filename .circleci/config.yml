@@ -24,7 +24,7 @@ jobs:
       - run: mkdir -p workspace
       - run: echo "hello world" > workspace/output.txt
       - persist_to_workspace:
-          root: /tmp/workspace
+          root: workspace
           paths: 
             - output.txt
   print_output_file:
@@ -32,5 +32,5 @@ jobs:
       - image: circleci/node:13.8.0
     steps:
       - attach_workspace:
-          at: /tmp/workspace
-      - run: cat /tmp/workspace/output.txt
+          at: workspace
+      - run: cat workspace/output.txt
