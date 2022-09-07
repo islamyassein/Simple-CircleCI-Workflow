@@ -1,66 +1,33 @@
 # .circleci/config.yml
 version: 2.1
 
-defaults: &defaults
-  docker:
-    - image: cimg/base:2020.01
-  working_directory: ~/project
-
-
-commands: # a reusable command with parameters
-  greeting:
-    parameters:
-      to:
-        type: string
-        default: "world"
-    steps:
-      - run: echo "Hello <<parameters.to>>"
-  print_pipeline_id:
-    parameters:
-      id:
-        type: string
-    steps:
-      - run: echo <<parameters.id>>
-
 workflows:
-  anchors_aliases_commands:
+  On_Fail:
     jobs:
       - build
-      - save_hello_world_output:
-          requires:
-            - build
-      - print_output_file:
-          requires:
-            - save_hello_world_output
-
 jobs:
 
   build:
-    <<: *defaults
+    docker:
+      - image: cimg/base:2020.01
     steps:
       - checkout
       - run:
-          name: "echo an env var that is part of our project"
-          command: |
-            echo $MY_ENV_VAR
+          name: Testing application
+          command: make test
+          shell: /bin/bash
+          working_directory: ~/my-app
+          no_output_timeout: 30m
+          environment:
+            FOO: bar
 
-  save_hello_world_output:
-    <<: *defaults
-    steps:
-#      - run: mkdir -p workspace
-      - run: echo "hello world" > ~/output.txt
-      - persist_to_workspace:
-          root: ~/
-          paths: 
-            - output.txt
-            
-  print_output_file:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run: cat ~/output.txt
-      - greeting:
-          to: "Islam Yassein"
-      - print_pipeline_id:
-          id: <<pipeline.id>>
+      - run: echo 127.0.0.1 devhost | sudo tee -a /etc/hosts
+
+      - run: |
+          sudo -u root createuser -h localhost --superuser ubuntu &&
+          sudo createdb -h localhost test_db
+
+      - run:
+          name: Upload Failed Tests
+          command: curl --data fail_tests.log http://example.com/error_logs
+          when: on_fail
